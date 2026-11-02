@@ -1,0 +1,2994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#06141a">
+<title>Tidewater Claim</title>
+<style>
+/* =====================================================
+   TIDEWATER CLAIM — Visual system: "Abyss Chart"
+   Deep-sea chrome + volcanic island. No cream/teal SaaS defaults.
+   ===================================================== */
+:root {
+  /* Island strata — ash coast → scrub → moss → heartstone */
+  --sand-0: #a8987c;
+  --sand-1: #8fa07a;
+  --sand-2: #6d8a55;
+  --sand-3: #d4a017;
+  --sand-0-deep: #8a7a5e;
+  --sand-1-deep: #6f8560;
+  --sand-2-deep: #547040;
+  --sand-3-deep: #a67c00;
+
+  --flood: #1a7a8c;
+  --flood-deep: #0a3d4a;
+  --flood-lite: #3ec4d6;
+  --whirl: #041e28;
+  --whirl-accent: #2ee6d6;
+
+  /* Cool chart room — not warm cream */
+  --bg: #c5d5db;
+  --bg-deep: #9eb4be;
+  --surface: #eef3f5;
+  --surface-2: #dce6ea;
+  --ink: #0d1c22;
+  --text: #0d1c22;
+  --text-muted: #3d5560;
+  --accent: #c23018;
+  --accent-hot: #e8472a;
+  --accent-2: #0a6b52;
+  --brass: #b8952c;
+  --foam: #e8f6f8;
+  --danger: #b91c1c;
+  --warn: #c27803;
+  --ok: #1f7a4d;
+  --shadow: rgba(13, 28, 34, 0.22);
+  --radius: 6px;
+  --radius-sm: 4px;
+  --font: "Trebuchet MS", "Gill Sans", "Segoe UI", Candara, sans-serif;
+  --font-display: "Gill Sans", "Trebuchet MS", "Segoe UI", sans-serif;
+  --tile-min: 44px;
+  --transition: 180ms cubic-bezier(.2,.7,.2,1);
+  --p0: #e8472a;
+  --p1: #0d9488;
+  --p2: #1d4e89;
+  --p3: #c9a227;
+  --anim-speed: 1;
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sand-0: #7a6b52;
+    --sand-1: #5f7354;
+    --sand-2: #4a6338;
+    --sand-3: #c9a227;
+    --sand-0-deep: #5c5040;
+    --sand-1-deep: #465640;
+    --sand-2-deep: #354828;
+    --sand-3-deep: #8a6e10;
+    --flood: #156878;
+    --flood-deep: #062832;
+    --flood-lite: #2ab8c9;
+    --whirl: #021018;
+    --whirl-accent: #2ee6d6;
+    --bg: #06141a;
+    --bg-deep: #030c10;
+    --surface: #0e2430;
+    --surface-2: #163040;
+    --ink: #e6f0f2;
+    --text: #e6f0f2;
+    --text-muted: #8aa4b0;
+    --accent: #ff5a3c;
+    --accent-hot: #ff7a5c;
+    --accent-2: #2dd4a8;
+    --brass: #d4b44a;
+    --foam: #b8e8ef;
+    --shadow: rgba(0, 0, 0, 0.55);
+  }
+}
+
+html.dark {
+  --sand-0: #7a6b52;
+  --sand-1: #5f7354;
+  --sand-2: #4a6338;
+  --sand-3: #c9a227;
+  --sand-0-deep: #5c5040;
+  --sand-1-deep: #465640;
+  --sand-2-deep: #354828;
+  --sand-3-deep: #8a6e10;
+  --flood: #156878;
+  --flood-deep: #062832;
+  --flood-lite: #2ab8c9;
+  --whirl: #021018;
+  --whirl-accent: #2ee6d6;
+  --bg: #06141a;
+  --bg-deep: #030c10;
+  --surface: #0e2430;
+  --surface-2: #163040;
+  --ink: #e6f0f2;
+  --text: #e6f0f2;
+  --text-muted: #8aa4b0;
+  --accent: #ff5a3c;
+  --accent-hot: #ff7a5c;
+  --accent-2: #2dd4a8;
+  --brass: #d4b44a;
+  --foam: #b8e8ef;
+  --shadow: rgba(0, 0, 0, 0.55);
+}
+
+html.large-text { font-size: 112%; }
+html.anim-fast { --anim-speed: 0.5; }
+html.anim-off { --anim-speed: 0.001; }
+html.no-patterns .stone-symbol { display: none !important; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  isolation: isolate;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(46, 230, 214, 0.12), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(194, 48, 24, 0.1), transparent 50%),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 11px,
+      rgba(13, 28, 34, 0.03) 11px,
+      rgba(13, 28, 34, 0.03) 12px
+    ),
+    linear-gradient(165deg, var(--bg) 0%, var(--bg-deep) 100%);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: var(--grain);
+  mix-blend-mode: overlay;
+}
+body > * { position: relative; z-index: 1; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 1rem;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.screen {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  padding: 1rem;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 0;
+}
+.screen.active { display: flex; }
+
+h2, .screen > h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 1.15rem;
+}
+
+/* ---- Buttons: signal flag style ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transition: transform var(--transition), background var(--transition), border-color var(--transition), color var(--transition);
+  min-height: 44px;
+  touch-action: manipulation;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.btn:active:not(:disabled) { transform: translateY(1px) scale(0.98); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hot) 100%);
+  color: #fff;
+  border: 2px solid transparent;
+  box-shadow: 3px 3px 0 rgba(13, 28, 34, 0.25);
+}
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 2px solid var(--text);
+  box-shadow: 3px 3px 0 var(--brass);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--brass);
+}
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-ghost { color: var(--text-muted); text-decoration: underline; padding: 0.5rem; text-transform: none; letter-spacing: 0; clip-path: none; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 0.7rem; justify-content: center; margin-top: 1.1rem; }
+
+/* ---- Main Menu: brand-forward atoll stage ---- */
+#screen-menu {
+  align-items: stretch;
+  justify-content: center;
+  text-align: left;
+  gap: 0;
+  max-width: 520px;
+}
+.menu-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+.logo-wrap {
+  position: relative;
+  padding: 1.5rem 0 1rem;
+  border-bottom: 3px solid var(--brass);
+}
+.logo-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 11vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  color: var(--text);
+  position: relative;
+  z-index: 1;
+}
+.logo-tide {
+  display: block;
+  color: var(--text);
+}
+.logo-claim {
+  display: block;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  font-size: 0.78em;
+  margin-top: 0.1em;
+}
+.wave-anim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 14px;
+  overflow: hidden;
+  opacity: 0.9;
+}
+.wave-anim span {
+  display: block;
+  width: 200%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 28px 10px at 14px 60%, var(--flood-lite) 42%, transparent 48%),
+    radial-gradient(ellipse 28px 10px at 42px 60%, var(--accent-2) 42%, transparent 48%),
+    radial-gradient(ellipse 28px 10px at 70px 60%, var(--flood-lite) 42%, transparent 48%);
+  background-size: 56px 100%;
+  animation: wave-scroll calc(2.2s * var(--anim-speed)) linear infinite;
+}
+@keyframes wave-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-56px); }
+}
+.menu-atoll {
+  height: 88px;
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 55%, var(--sand-3) 0 8%, var(--sand-2) 8% 18%, var(--sand-1) 18% 32%, var(--sand-0) 32% 48%, transparent 48%),
+    linear-gradient(180deg, var(--flood-deep) 0%, var(--flood) 55%, var(--flood-lite) 100%);
+  border: 2px solid rgba(13,28,34,0.2);
+  box-shadow: inset 0 -8px 20px rgba(0,0,0,0.2);
+}
+.menu-atoll::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-radial-gradient(circle at 30% 40%, transparent 0 8px, rgba(255,255,255,0.06) 8px 9px),
+    repeating-radial-gradient(circle at 70% 60%, transparent 0 10px, rgba(255,255,255,0.04) 10px 11px);
+  animation: caustic calc(8s * var(--anim-speed)) linear infinite;
+  opacity: 0.7;
+}
+.menu-atoll::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  top: 28%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--p0);
+  box-shadow:
+    42px 12px 0 var(--p1),
+    58px -4px 0 var(--p2),
+    28px 22px 0 var(--p3);
+  opacity: 0.9;
+}
+@keyframes caustic {
+  from { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, -2%) scale(1.05); }
+  to { transform: translate(0, 0) scale(1); }
+}
+.tagline {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 20rem;
+  line-height: 1.45;
+  border-left: 3px solid var(--accent);
+  padding-left: 0.85rem;
+  margin: 0;
+}
+.menu-btns { display: flex; flex-direction: column; gap: 0.65rem; width: 100%; max-width: 280px; }
+.menu-btns .btn { width: 100%; }
+
+/* ---- Setup ---- */
+#screen-setup h2, #screen-howto h2, #screen-settings h2, #screen-results h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--brass);
+  padding-bottom: 0.5rem;
+}
+.setup-count {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.setup-count label { font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.8rem; }
+.count-btns { display: flex; gap: 0.4rem; }
+.count-btns button {
+  width: 44px; height: 44px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 2px solid var(--text-muted);
+  font-weight: 800;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.count-btns button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 2px 2px 0 var(--brass);
+}
+.seat-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+.seat {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(13,28,34,0.12);
+  border-left: 4px solid var(--brass);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem 0.85rem;
+  align-items: center;
+}
+.seat-swatch {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.1rem;
+  grid-row: span 2;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.15);
+}
+.seat input[type="text"] {
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border: 2px solid var(--surface-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  width: 100%;
+  max-width: 160px;
+}
+.seat-controls { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.seat-controls select {
+  font: inherit;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 40px;
+}
+.toggle-type {
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 2px solid var(--text-muted);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  min-height: 40px;
+}
+.toggle-type.is-bot { border-color: var(--warn); color: var(--warn); }
+.toggle-type.is-human { border-color: var(--ok); color: var(--ok); }
+
+/* ---- Game screen ---- */
+#screen-game { padding: 0.5rem; max-width: 1100px; }
+.game-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid rgba(13,28,34,0.1);
+  margin-bottom: 0.35rem;
+}
+.round-label {
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-display);
+}
+.tide-meter { display: flex; gap: 5px; align-items: center; }
+.tide-ring {
+  width: 20px; height: 20px;
+  border-radius: 3px;
+  border: 2px solid var(--text-muted);
+  background: var(--sand-0);
+  font-size: 0.55rem;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+  color: var(--ink);
+}
+.tide-ring.flooded {
+  background: linear-gradient(145deg, var(--flood-lite), var(--flood-deep));
+  border-color: var(--flood-deep);
+  color: #fff;
+}
+.tide-ring.warn {
+  animation: pulse-border calc(1.2s * var(--anim-speed)) ease-in-out infinite;
+  border-color: var(--flood-lite);
+}
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(62,196,214,0.25); }
+  50% { box-shadow: 0 0 0 5px rgba(62,196,214,0.45); }
+}
+
+.tide-banner {
+  display: none;
+  background: linear-gradient(100deg, var(--flood-deep), var(--flood) 40%, #0a6b72);
+  color: var(--foam);
+  text-align: left;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  margin: 0.25rem 0;
+  border-left: 4px solid var(--flood-lite);
+  animation: pulse-banner calc(1.6s * var(--anim-speed)) ease-in-out infinite;
+}
+.tide-banner.show { display: block; }
+@keyframes pulse-banner {
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 1; }
+}
+
+.game-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  flex: 1;
+  min-height: 0;
+}
+@media (min-width: 800px) {
+  .game-body {
+    grid-template-columns: 1fr 230px;
+    grid-template-rows: auto 1fr;
+  }
+  .board-wrap { grid-row: span 2; }
+  .scoreboard { grid-column: 2; }
+  .pick-panel { grid-column: 2; }
+}
+
+.board-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem;
+  min-height: 0;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(62,196,214,0.18), transparent 60%),
+    linear-gradient(160deg, var(--flood-deep) 0%, #0a4a58 45%, var(--flood) 100%);
+  border-radius: 14px;
+  border: 3px solid rgba(46, 230, 214, 0.25);
+  box-shadow:
+    inset 0 0 40px rgba(0,0,0,0.35),
+    0 8px 0 rgba(13,28,34,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.board-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    repeating-radial-gradient(circle at 40% 30%, transparent 0 14px, rgba(255,255,255,0.04) 14px 15px),
+    repeating-radial-gradient(circle at 65% 70%, transparent 0 18px, rgba(46,230,214,0.05) 18px 19px);
+  animation: caustic calc(10s * var(--anim-speed)) ease-in-out infinite;
+  pointer-events: none;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: clamp(3px, 0.7vw, 6px);
+  width: min(100%, min(90vw, 500px));
+  aspect-ratio: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 1;
+  padding: 4px;
+  background: rgba(3, 20, 28, 0.35);
+  border-radius: 10px;
+}
+.tile {
+  position: relative;
+  border-radius: clamp(3px, 1vw, 7px);
+  border: 1.5px solid rgba(13,28,34,0.18);
+  min-width: 0;
+  min-height: var(--tile-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: clamp(0.65rem, 2.5vw, 0.95rem);
+  transition: transform calc(150ms * var(--anim-speed)), border-color var(--transition), filter var(--transition);
+  color: rgba(13,28,34,0.55);
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+@media (prefers-color-scheme: dark) {
+  .tile { color: rgba(230,240,242,0.45); border-color: rgba(0,0,0,0.35); }
+}
+html.dark .tile { color: rgba(230,240,242,0.45); border-color: rgba(0,0,0,0.35); }
+
+.tile.ring-0 {
+  background:
+    linear-gradient(145deg, var(--sand-0) 0%, var(--sand-0-deep) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.tile.ring-1 {
+  background:
+    linear-gradient(145deg, var(--sand-1) 0%, var(--sand-1-deep) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.tile.ring-2 {
+  background:
+    linear-gradient(145deg, var(--sand-2) 0%, var(--sand-2-deep) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.tile.ring-3 {
+  background:
+    radial-gradient(circle at 35% 30%, #f0d060 0%, var(--sand-3) 45%, var(--sand-3-deep) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+  border-color: rgba(166, 124, 0, 0.5);
+}
+.tile.ring-0::before,
+.tile.ring-1::before,
+.tile.ring-2::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px);
+  pointer-events: none;
+}
+.tile.flooded {
+  background:
+    linear-gradient(160deg, var(--flood-lite) 0%, var(--flood) 40%, var(--flood-deep) 100%);
+  color: rgba(255,255,255,0.4);
+  border-color: rgba(46,230,214,0.2);
+  animation: flood-shimmer calc(2.8s * var(--anim-speed)) ease-in-out infinite;
+}
+.tile.flooded::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 30% at 30% 20%, rgba(255,255,255,0.25), transparent),
+    radial-gradient(ellipse 40% 20% at 70% 60%, rgba(46,230,214,0.3), transparent);
+  animation: caustic calc(4s * var(--anim-speed)) ease-in-out infinite;
+  pointer-events: none;
+  opacity: 1;
+}
+@keyframes flood-shimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.12); }
+}
+.tile.whirlpool {
+  background:
+    conic-gradient(from 0deg, var(--whirl), var(--whirl-accent), #0a4a5c, var(--whirl), var(--whirl-accent), var(--whirl));
+  color: rgba(255,255,255,0.35);
+  border-color: var(--whirl-accent);
+  animation: whirl-hue calc(2.5s * var(--anim-speed)) linear infinite;
+}
+@keyframes whirl-hue {
+  to { filter: hue-rotate(25deg); }
+}
+.tile.whirlpool::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border: 2.5px solid rgba(255,255,255,0.45);
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  box-shadow: 0 0 0 4px rgba(46,230,214,0.15);
+  animation: spiral calc(0.9s * var(--anim-speed)) linear infinite;
+}
+.tile.whirlpool::before {
+  content: "";
+  position: absolute;
+  inset: 28%;
+  border: 1.5px solid rgba(46,230,214,0.5);
+  border-radius: 50%;
+  border-bottom-color: transparent;
+  animation: spiral calc(1.4s * var(--anim-speed)) linear infinite reverse;
+  opacity: 1;
+  background: none;
+}
+@keyframes spiral {
+  to { transform: rotate(360deg); }
+}
+.tile.claimed { color: transparent; }
+.tile.selectable:hover,
+.tile.selectable:focus-visible {
+  outline: none;
+  border-color: var(--foam);
+  transform: scale(1.05);
+  z-index: 2;
+  filter: brightness(1.08);
+}
+.tile.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232, 71, 42, 0.55);
+  transform: scale(1.07);
+  z-index: 3;
+}
+.tile.tide-warn {
+  animation: pulse-border calc(1.2s * var(--anim-speed)) ease-in-out infinite;
+  border-color: var(--flood-lite);
+}
+.tile.ghost-mark::before {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: var(--ghost-color, #888);
+  opacity: 0.55;
+  animation: ghost-in calc(300ms * var(--anim-speed)) ease-out;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+  z-index: 2;
+}
+@keyframes ghost-in {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 0.55; }
+}
+.tile.flash-collide {
+  animation: collide-flash calc(500ms * var(--anim-speed)) ease;
+}
+@keyframes collide-flash {
+  0%, 100% { background: var(--danger); }
+  50% { background: #ff6b5a; filter: brightness(1.3); }
+}
+.tile.flooding-now {
+  animation: flood-in calc(600ms * var(--anim-speed)) ease-out forwards;
+}
+@keyframes flood-in {
+  from { filter: brightness(1.4) saturate(0.5); }
+  to { filter: brightness(1); }
+}
+
+.stone {
+  position: absolute;
+  width: 64%;
+  height: 64%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 -5px 8px rgba(0,0,0,0.35),
+    inset 0 3px 5px rgba(255,255,255,0.4),
+    0 3px 0 rgba(0,0,0,0.25);
+  z-index: 1;
+  color: #fff;
+  font-size: clamp(0.65rem, 2.4vw, 1rem);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.35);
+}
+.stone.sym-triangle { border-radius: 20% 20% 45% 45%; clip-path: polygon(50% 8%, 92% 88%, 8% 88%); border-radius: 0; box-shadow: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.35)); }
+.stone.sym-square { border-radius: 18%; }
+.stone.sym-diamond { border-radius: 12%; transform: rotate(45deg); width: 52%; height: 52%; }
+.stone.sym-diamond .stone-symbol { transform: rotate(-45deg); }
+.stone.sweeping {
+  animation: sweep-out calc(400ms * var(--anim-speed)) ease-in forwards;
+}
+@keyframes sweep-out {
+  to { transform: scale(0); opacity: 0; }
+}
+
+.tile-val {
+  position: absolute;
+  top: 2px; left: 3px;
+  font-size: clamp(0.5rem, 1.8vw, 0.7rem);
+  font-weight: 800;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+  font-variant-numeric: tabular-nums;
+}
+.tile.claimed .tile-val,
+.tile.flooded .tile-val,
+.tile.whirlpool .tile-val { opacity: 0.3; }
+.tile.ring-3 .tile-val { color: rgba(13,28,34,0.7); opacity: 0.85; }
+
+/* Scoreboard */
+.scoreboard {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 0.55rem;
+  border: 1px solid rgba(13,28,34,0.1);
+  border-top: 3px solid var(--brass);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+@media (min-width: 800px) {
+  .scoreboard { max-height: none; }
+}
+.player-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.35rem 0.5rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  border-left: 3px solid transparent;
+  align-items: center;
+  font-size: 0.85rem;
+  background: transparent;
+}
+.player-card.current {
+  border-color: transparent;
+  border-left-color: var(--accent);
+  background: var(--surface-2);
+}
+.pc-swatch {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.75rem;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);
+}
+.pc-name { font-weight: 800; letter-spacing: 0.02em; }
+.pc-stats { color: var(--text-muted); font-size: 0.72rem; grid-column: 2; }
+.pc-score {
+  font-weight: 800;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--brass);
+}
+
+.pick-panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  border: 1px solid rgba(13,28,34,0.1);
+  text-align: center;
+}
+.pick-status {
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+  letter-spacing: 0.03em;
+  font-size: 0.9rem;
+}
+.pick-actions { display: flex; gap: 0.5rem; justify-content: center; }
+.thinking {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0.5rem;
+}
+.thinking.show { display: flex; }
+.thinking-dots span {
+  width: 7px; height: 7px;
+  background: var(--accent-2);
+  border-radius: 50%;
+  display: inline-block;
+  animation: think-bounce calc(0.8s * var(--anim-speed)) ease-in-out infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes think-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.event-log-wrap { margin: 0.35rem 0; }
+.event-log-toggle {
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.65rem;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid rgba(13,28,34,0.08);
+}
+.event-log {
+  display: none;
+  max-height: 120px;
+  overflow-y: auto;
+  background: var(--surface-2);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+.event-log.open { display: block; }
+.event-log li { margin-bottom: 0.25rem; list-style: square; margin-left: 1rem; }
+
+/* Privacy overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(26,122,140,0.35), transparent 55%),
+    var(--bg-deep);
+  z-index: 100;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+}
+.overlay.show { display: flex; }
+.overlay h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+.overlay p { color: var(--text-muted); max-width: 22rem; margin-bottom: 1.5rem; line-height: 1.4; }
+.overlay .big-swatch {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.6rem;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.12), 0 8px 0 rgba(0,0,0,0.25);
+}
+
+.summary-box {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid rgba(13,28,34,0.12);
+  border-top: 4px solid var(--accent);
+  text-align: left;
+  box-shadow: 6px 6px 0 rgba(13,28,34,0.15);
+}
+.summary-box h3 {
+  text-align: left;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+.summary-box ul { margin: 0.5rem 0 1rem 1.2rem; font-size: 0.9rem; line-height: 1.5; }
+.summary-box .btn { width: 100%; }
+
+/* Results */
+#screen-results { align-items: stretch; overflow-y: auto; max-width: 480px; }
+.winner-banner {
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  font-weight: 800;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: var(--text);
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  border-left: 4px solid var(--accent);
+  padding-left: 0.75rem;
+  line-height: 1.25;
+}
+.bar-chart {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+.bar-row { display: grid; grid-template-columns: 90px 1fr 40px; gap: 0.5rem; align-items: center; font-size: 0.9rem; }
+.bar-track {
+  height: 18px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid rgba(13,28,34,0.1);
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width calc(800ms * var(--anim-speed)) ease-out;
+  min-width: 4px;
+}
+.best-moment {
+  background: var(--surface);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  text-align: left;
+  font-size: 0.92rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  border-left: 4px solid var(--brass);
+  border: 1px solid rgba(13,28,34,0.1);
+  border-left-width: 4px;
+  border-left-color: var(--brass);
+}
+.results-list {
+  list-style: none;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.results-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed rgba(13,28,34,0.15);
+  font-size: 0.9rem;
+}
+
+/* How to play */
+#screen-howto { overflow-y: auto; }
+.howto-step {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid rgba(13,28,34,0.1);
+  border-left: 4px solid var(--accent-2);
+}
+.howto-step h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.howto-step p { font-size: 0.9rem; line-height: 1.45; color: var(--text-muted); margin-bottom: 0.6rem; }
+.mini-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  width: 96px;
+  margin: 0.4rem auto;
+  padding: 6px;
+  background: var(--flood-deep);
+  border-radius: 6px;
+}
+.mini-tile {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--sand-1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--ink);
+  position: relative;
+}
+.mini-tile.w { background: conic-gradient(var(--whirl), var(--whirl-accent), var(--whirl)); color: #fff; }
+.mini-tile.f { background: linear-gradient(145deg, var(--flood-lite), var(--flood-deep)); color: rgba(255,255,255,0.55); }
+.mini-tile .ms {
+  width: 60%; height: 60%; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.55rem;
+}
+
+/* Settings */
+#screen-settings { overflow-y: auto; max-width: 480px; }
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  margin-bottom: 0.6rem;
+  border: 1px solid rgba(13,28,34,0.1);
+  gap: 1rem;
+}
+.setting-row label { font-weight: 700; font-size: 0.9rem; }
+.setting-row select, .setting-row input[type="checkbox"] {
+  font: inherit;
+  min-height: 36px;
+  accent-color: var(--accent);
+}
+.setting-row select {
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--text);
+}
+.switch {
+  position: relative;
+  width: 48px; height: 28px;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider {
+  position: absolute; inset: 0;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.switch .slider::before {
+  content: "";
+  position: absolute;
+  width: 20px; height: 20px;
+  left: 4px; top: 4px;
+  background: #fff;
+  border-radius: 3px;
+  transition: transform var(--transition);
+}
+.switch input:checked + .slider { background: var(--accent); }
+.switch input:checked + .slider::before { transform: translateX(20px); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  border: 0;
+}
+#aria-live {
+  position: absolute;
+  left: -9999px;
+  height: 1px; width: 1px;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="aria-live" aria-live="polite" aria-atomic="true"></div>
+
+<!-- MAIN MENU -->
+<section id="screen-menu" class="screen active" role="main" aria-label="Main menu">
+  <div class="menu-stage">
+    <div class="logo-wrap">
+      <p class="logo-kicker">Simultaneous claim</p>
+      <h1 class="logo"><span class="logo-tide">TIDEWATER</span><span class="logo-claim">CLAIM</span></h1>
+      <div class="wave-anim" aria-hidden="true"><span></span></div>
+    </div>
+    <div class="menu-atoll" aria-hidden="true" title="The island"></div>
+    <p class="tagline">Guess where they'll strike. Dodge the whirlpool.</p>
+    <div class="menu-btns">
+      <button type="button" class="btn btn-primary" data-action="goto-setup">Play</button>
+      <button type="button" class="btn btn-secondary" data-action="goto-howto">How to Play</button>
+      <button type="button" class="btn btn-secondary" data-action="goto-settings">Settings</button>
+    </div>
+  </div>
+</section>
+
+<!-- SETUP -->
+<section id="screen-setup" class="screen" aria-label="Game setup">
+  <h2>Game Setup</h2>
+  <div class="setup-count">
+    <label>Players</label>
+    <div class="count-btns" role="group" aria-label="Number of players">
+      <button type="button" data-count="2" class="active">2</button>
+      <button type="button" data-count="3">3</button>
+      <button type="button" data-count="4">4</button>
+    </div>
+  </div>
+  <div class="seat-list" id="seat-list"></div>
+  <div class="btn-row">
+    <button type="button" class="btn btn-secondary" data-action="goto-menu">Back</button>
+    <button type="button" class="btn btn-primary" data-action="start-game">Start Game</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="screen-game" class="screen" aria-label="Game board">
+  <div class="game-top">
+    <span class="round-label" id="round-label">Round 1 / 8</span>
+    <div class="tide-meter" id="tide-meter" aria-label="Tide progress" title="Flooded rings">
+      <span class="tide-ring" data-ring="0" title="Ring 0">0</span>
+      <span class="tide-ring" data-ring="1" title="Ring 1">1</span>
+      <span class="tide-ring" data-ring="2" title="Ring 2">2</span>
+      <span class="tide-ring" data-ring="3" title="Center">3</span>
+    </div>
+    <button type="button" class="btn btn-secondary" data-action="quit-game" style="padding:0.4rem 0.8rem;font-size:0.85rem;">Menu</button>
+  </div>
+  <div class="tide-banner" id="tide-banner" role="status"></div>
+  <div class="game-body">
+    <div class="board-wrap">
+      <div class="board" id="board" role="grid" aria-label="Island board 7 by 7"></div>
+    </div>
+    <div class="scoreboard" id="scoreboard" aria-label="Scoreboard"></div>
+    <div class="pick-panel" id="pick-panel">
+      <div class="pick-status" id="pick-status">Pick 2 cells (0/2 chosen)</div>
+      <div class="thinking" id="thinking" aria-hidden="true">
+        <span id="thinking-name">Bot</span> is thinking
+        <span class="thinking-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+      </div>
+      <div class="pick-actions" id="pick-actions">
+        <button type="button" class="btn btn-secondary" id="btn-clear" disabled>Clear</button>
+        <button type="button" class="btn btn-primary" id="btn-confirm" disabled>Confirm</button>
+      </div>
+    </div>
+  </div>
+  <div class="event-log-wrap">
+    <button type="button" class="event-log-toggle" id="log-toggle" aria-expanded="false">Event Log ▸</button>
+    <ul class="event-log" id="event-log"></ul>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<div class="overlay" id="privacy-overlay" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+  <div class="big-swatch" id="privacy-swatch" aria-hidden="true"></div>
+  <h2 id="privacy-title">Pass the device</h2>
+  <p id="privacy-msg">Tap when only you can see the screen.</p>
+  <button type="button" class="btn btn-primary" id="privacy-ok">I'm ready</button>
+</div>
+
+<!-- ROUND SUMMARY -->
+<div class="overlay" id="summary-overlay" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+  <div class="summary-box">
+    <h3 id="summary-title">Round Summary</h3>
+    <ul id="summary-list"></ul>
+    <button type="button" class="btn btn-primary" id="summary-ok">Continue</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<section id="screen-results" class="screen" aria-label="Results">
+  <h2>Final Results</h2>
+  <div class="winner-banner" id="winner-banner"></div>
+  <div class="bar-chart" id="bar-chart"></div>
+  <div class="best-moment" id="best-moment"></div>
+  <ul class="results-list" id="results-list"></ul>
+  <div class="btn-row">
+    <button type="button" class="btn btn-primary" data-action="play-again">Play Again</button>
+    <button type="button" class="btn btn-secondary" data-action="goto-menu">Main Menu</button>
+  </div>
+</section>
+
+<!-- HOW TO PLAY -->
+<section id="screen-howto" class="screen" aria-label="How to play">
+  <h2>How to Play</h2>
+  <div class="howto-step">
+    <h3>1. Secret picks</h3>
+    <p>Each round, every player secretly chooses <strong>exactly 2 dry cells</strong> on the 7×7 island. All picks are revealed together.</p>
+    <div class="mini-board" aria-hidden="true">
+      <div class="mini-tile">1</div><div class="mini-tile">1</div><div class="mini-tile">1</div>
+      <div class="mini-tile">1</div><div class="mini-tile" style="background:var(--sand-3)">5</div><div class="mini-tile">1</div>
+      <div class="mini-tile">1</div><div class="mini-tile">1</div><div class="mini-tile">1</div>
+    </div>
+  </div>
+  <div class="howto-step">
+    <h3>2. Unique wins</h3>
+    <p>A cell chosen by <strong>exactly one</strong> player is claimed — place your stone. Outer ring cells are worth 1, then 2, 3, and the center is worth <strong>5</strong>.</p>
+  </div>
+  <div class="howto-step">
+    <h3>3. Collisions &amp; whirlpools</h3>
+    <p>If two or more players pick the same cell, it becomes a deadly <strong>whirlpool</strong>. Nobody claims it — and it sweeps away stones in the four adjacent cells.</p>
+    <div class="mini-board" aria-hidden="true" style="width:120px;grid-template-columns:repeat(3,1fr)">
+      <div class="mini-tile"></div>
+      <div class="mini-tile"><div class="ms" style="background:var(--p0)">●</div></div>
+      <div class="mini-tile"></div>
+      <div class="mini-tile"><div class="ms" style="background:var(--p1)">▲</div></div>
+      <div class="mini-tile w">◎</div>
+      <div class="mini-tile"><div class="ms" style="background:var(--p2)">■</div></div>
+      <div class="mini-tile"></div>
+      <div class="mini-tile" style="opacity:0.3"><div class="ms" style="background:var(--p3);opacity:0.5">◆</div></div>
+      <div class="mini-tile"></div>
+    </div>
+    <p style="font-size:0.8rem;text-align:center;margin-top:0.3rem">Example: collision at center creates a whirlpool; adjacent stones are swept dry again.</p>
+  </div>
+  <div class="howto-step">
+    <h3>4. The rising tide</h3>
+    <p>In rounds 3, 5 and 7 the tide floods rings from the outside in. Stones on flooded land are <strong>banked</strong> for points. You'll get a warning the round before.</p>
+    <div class="mini-board" aria-hidden="true">
+      <div class="mini-tile f">~</div><div class="mini-tile f">~</div><div class="mini-tile f">~</div>
+      <div class="mini-tile f">~</div><div class="mini-tile" style="background:var(--sand-2)">3</div><div class="mini-tile f">~</div>
+      <div class="mini-tile f">~</div><div class="mini-tile f">~</div><div class="mini-tile f">~</div>
+    </div>
+  </div>
+  <div class="howto-step">
+    <h3>5. Endgame</h3>
+    <p>After 8 rounds, remaining stones are banked. Highest score wins. Ties break by most banked stones; still tied means a shared victory.</p>
+  </div>
+  <div class="btn-row">
+    <button type="button" class="btn btn-primary" data-action="goto-menu">Got it</button>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="screen-settings" class="screen" aria-label="Settings">
+  <h2>Settings</h2>
+  <div class="setting-row">
+    <label for="set-sound">Sound</label>
+    <label class="switch"><input type="checkbox" id="set-sound" checked><span class="slider"></span></label>
+  </div>
+  <div class="setting-row">
+    <label for="set-anim">Animation speed</label>
+    <select id="set-anim">
+      <option value="normal">Normal</option>
+      <option value="fast">Fast</option>
+      <option value="off">Off</option>
+    </select>
+  </div>
+  <div class="setting-row">
+    <label for="set-patterns">Colorblind patterns</label>
+    <label class="switch"><input type="checkbox" id="set-patterns" checked><span class="slider"></span></label>
+  </div>
+  <div class="setting-row">
+    <label for="set-large">Large text</label>
+    <label class="switch"><input type="checkbox" id="set-large"><span class="slider"></span></label>
+  </div>
+  <div class="btn-row">
+    <button type="button" class="btn btn-primary" data-action="goto-menu">Done</button>
+  </div>
+</section>
+
+<script>
+(function () {
+'use strict';
+
+/* =====================================================
+   CONFIG
+   ===================================================== */
+var CONFIG = {
+  BOARD_SIZE: 7,
+  TOTAL_ROUNDS: 8,
+  PICKS_PER_ROUND: 2,
+  RING_VALUES: [1, 2, 3, 5],
+  FLOOD_SCHEDULE: { 3: 0, 5: 1, 7: 2 },
+  TIDE_WARN_ROUNDS: { 2: 0, 4: 1, 6: 2 },
+  RING_NAMES: ['outer ring', 'second ring', 'inner ring', 'center'],
+  COLORS: ['#e8472a', '#0d9488', '#1d4e89', '#c9a227'],
+  SYMBOLS: ['●', '▲', '■', '◆'],
+  SYMBOL_NAMES: ['circle', 'triangle', 'square', 'diamond'],
+  DEFAULT_NAMES: ['Coral', 'Tide', 'Reef', 'Drift'],
+  STORAGE_KEY: 'tidewater_claim_settings_v1',
+  BOT_THINK_MIN: 400,
+  BOT_THINK_MAX: 900
+};
+
+var CELL = { DRY: 'dry', CLAIMED: 'claimed', WHIRLPOOL: 'whirlpool', FLOODED: 'flooded' };
+
+/* =====================================================
+   STATE
+   ===================================================== */
+var state = {
+  screen: 'menu',
+  settings: {
+    sound: true,
+    animSpeed: 'normal',
+    patterns: true,
+    largeText: false
+  },
+  setup: {
+    playerCount: 2,
+    seats: []
+  },
+  game: null,
+  focusRow: 0,
+  focusCol: 0,
+  pendingPrivacyResolve: null,
+  pendingSummaryResolve: null,
+  logOpen: false
+};
+
+/* =====================================================
+   RULES ENGINE (pure, no DOM)
+   ===================================================== */
+function getRing(row, col) {
+  var n = CONFIG.BOARD_SIZE - 1;
+  return Math.min(row, col, n - row, n - col);
+}
+
+function getCellValue(row, col) {
+  return CONFIG.RING_VALUES[getRing(row, col)];
+}
+
+function cellKey(row, col) {
+  return row + ',' + col;
+}
+
+function parseKey(key) {
+  var p = key.split(',');
+  return { row: +p[0], col: +p[1] };
+}
+
+function createBoard() {
+  var board = [];
+  var size = CONFIG.BOARD_SIZE;
+  for (var r = 0; r < size; r++) {
+    board[r] = [];
+    for (var c = 0; c < size; c++) {
+      board[r][c] = {
+        row: r,
+        col: c,
+        ring: getRing(r, c),
+        value: getCellValue(r, c),
+        state: CELL.DRY,
+        owner: null
+      };
+    }
+  }
+  return board;
+}
+
+function cloneBoard(board) {
+  return board.map(function (row) {
+    return row.map(function (cell) {
+      return {
+        row: cell.row,
+        col: cell.col,
+        ring: cell.ring,
+        value: cell.value,
+        state: cell.state,
+        owner: cell.owner
+      };
+    });
+  });
+}
+
+function getDryCells(board) {
+  var dry = [];
+  for (var r = 0; r < board.length; r++) {
+    for (var c = 0; c < board[r].length; c++) {
+      if (board[r][c].state === CELL.DRY) dry.push({ row: r, col: c });
+    }
+  }
+  return dry;
+}
+
+function getOrthogonalNeighbors(row, col, size) {
+  var dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+  var out = [];
+  for (var i = 0; i < dirs.length; i++) {
+    var nr = row + dirs[i][0];
+    var nc = col + dirs[i][1];
+    if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+      out.push({ row: nr, col: nc });
+    }
+  }
+  return out;
+}
+
+function createPlayers(seatConfigs) {
+  return seatConfigs.map(function (seat, i) {
+    return {
+      id: i,
+      name: seat.name || CONFIG.DEFAULT_NAMES[i],
+      color: CONFIG.COLORS[i],
+      symbol: CONFIG.SYMBOLS[i],
+      symbolName: CONFIG.SYMBOL_NAMES[i],
+      isBot: seat.isBot,
+      difficulty: seat.difficulty || 'medium',
+      points: 0,
+      stonesBanked: 0,
+      stonesOnBoard: 0,
+      whirlpoolsCaused: 0,
+      claimsMade: 0
+    };
+  });
+}
+
+/**
+ * Apply tide flood for a given ring. Banks stones, floods cells.
+ * Returns { banked: [{playerId, row, col, value}], floodedKeys: [...] }
+ */
+function applyTide(board, players, ring) {
+  var banked = [];
+  var floodedKeys = [];
+  var size = board.length;
+  for (var r = 0; r < size; r++) {
+    for (var c = 0; c < size; c++) {
+      var cell = board[r][c];
+      if (cell.ring !== ring) continue;
+      if (cell.state === CELL.CLAIMED && cell.owner !== null) {
+        var owner = players[cell.owner];
+        owner.points += cell.value;
+        owner.stonesBanked += 1;
+        owner.stonesOnBoard = Math.max(0, owner.stonesOnBoard - 1);
+        banked.push({ playerId: cell.owner, row: r, col: c, value: cell.value });
+      }
+      cell.state = CELL.FLOODED;
+      cell.owner = null;
+      floodedKeys.push(cellKey(r, c));
+    }
+  }
+  return { banked: banked, floodedKeys: floodedKeys };
+}
+
+/**
+ * Resolve a round given picks: { playerId: [{row,col}, ...] }
+ * Mutates board and players. Returns detailed result object.
+ */
+function resolveRound(board, players, picks) {
+  var size = board.length;
+  var pickCount = {}; // key -> Set of playerIds (as object)
+  var playerIds = Object.keys(picks).map(Number);
+
+  for (var pi = 0; pi < playerIds.length; pi++) {
+    var pid = playerIds[pi];
+    var cells = picks[pid] || [];
+    for (var ci = 0; ci < cells.length; ci++) {
+      var cell = cells[ci];
+      var key = cellKey(cell.row, cell.col);
+      if (!pickCount[key]) pickCount[key] = {};
+      pickCount[key][pid] = true;
+    }
+  }
+
+  var claims = [];
+  var collisions = [];
+  var newWhirlpools = [];
+
+  var keys = Object.keys(pickCount);
+  for (var ki = 0; ki < keys.length; ki++) {
+    var k = keys[ki];
+    var pos = parseKey(k);
+    var who = Object.keys(pickCount[k]).map(Number);
+    var target = board[pos.row][pos.col];
+
+    if (target.state !== CELL.DRY) continue;
+
+    if (who.length === 1) {
+      var sole = who[0];
+      target.state = CELL.CLAIMED;
+      target.owner = sole;
+      players[sole].stonesOnBoard += 1;
+      players[sole].claimsMade += 1;
+      claims.push({ playerId: sole, row: pos.row, col: pos.col, value: target.value });
+    } else if (who.length >= 2) {
+      target.state = CELL.WHIRLPOOL;
+      target.owner = null;
+      collisions.push({ row: pos.row, col: pos.col, players: who.slice() });
+      newWhirlpools.push({ row: pos.row, col: pos.col });
+      for (var wi = 0; wi < who.length; wi++) {
+        players[who[wi]].whirlpoolsCaused += 1;
+      }
+    }
+  }
+
+  // Simultaneous sweeps from new whirlpools
+  var sweptSet = {};
+  var swept = [];
+  for (var wi2 = 0; wi2 < newWhirlpools.length; wi2++) {
+    var wp = newWhirlpools[wi2];
+    var neighbors = getOrthogonalNeighbors(wp.row, wp.col, size);
+    for (var ni = 0; ni < neighbors.length; ni++) {
+      var nb = neighbors[ni];
+      var nk = cellKey(nb.row, nb.col);
+      if (sweptSet[nk]) continue;
+      var ncell = board[nb.row][nb.col];
+      if (ncell.state === CELL.CLAIMED && ncell.owner !== null) {
+        sweptSet[nk] = true;
+        var prevOwner = ncell.owner;
+        players[prevOwner].stonesOnBoard = Math.max(0, players[prevOwner].stonesOnBoard - 1);
+        swept.push({ row: nb.row, col: nb.col, playerId: prevOwner, value: ncell.value });
+        ncell.state = CELL.DRY;
+        ncell.owner = null;
+      }
+    }
+  }
+
+  return {
+    claims: claims,
+    collisions: collisions,
+    newWhirlpools: newWhirlpools,
+    swept: swept,
+    pickCount: pickCount
+  };
+}
+
+/**
+ * Bank all remaining stones on the board (end of game).
+ */
+function scoreFinal(board, players) {
+  var banked = [];
+  var size = board.length;
+  for (var r = 0; r < size; r++) {
+    for (var c = 0; c < size; c++) {
+      var cell = board[r][c];
+      if (cell.state === CELL.CLAIMED && cell.owner !== null) {
+        var owner = players[cell.owner];
+        owner.points += cell.value;
+        owner.stonesBanked += 1;
+        owner.stonesOnBoard = Math.max(0, owner.stonesOnBoard - 1);
+        banked.push({ playerId: cell.owner, row: r, col: c, value: cell.value });
+        cell.state = CELL.DRY;
+        cell.owner = null;
+      }
+    }
+  }
+  return banked;
+}
+
+/**
+ * Determine winners. Returns { winners: [playerIds], reason: string }
+ * Tie-break 1: more banked stones. Still tied: shared victory.
+ */
+function determineWinners(players) {
+  var maxPts = -1;
+  var i;
+  for (i = 0; i < players.length; i++) {
+    if (players[i].points > maxPts) maxPts = players[i].points;
+  }
+  var top = players.filter(function (p) { return p.points === maxPts; });
+  if (top.length === 1) {
+    return { winners: [top[0].id], reason: 'highest score' };
+  }
+  var maxBanked = -1;
+  for (i = 0; i < top.length; i++) {
+    if (top[i].stonesBanked > maxBanked) maxBanked = top[i].stonesBanked;
+  }
+  var top2 = top.filter(function (p) { return p.stonesBanked === maxBanked; });
+  if (top2.length === 1) {
+    return { winners: [top2[0].id], reason: 'tie-break: more banked stones' };
+  }
+  return { winners: top2.map(function (p) { return p.id; }), reason: 'shared victory' };
+}
+
+function unbankedPotential(board, playerId) {
+  var total = 0;
+  for (var r = 0; r < board.length; r++) {
+    for (var c = 0; c < board[r].length; c++) {
+      var cell = board[r][c];
+      if (cell.state === CELL.CLAIMED && cell.owner === playerId) {
+        total += cell.value;
+      }
+    }
+  }
+  return total;
+}
+
+function requiredPicks(board) {
+  var dry = getDryCells(board).length;
+  return Math.min(CONFIG.PICKS_PER_ROUND, dry);
+}
+
+function createGame(seatConfigs) {
+  return {
+    board: createBoard(),
+    players: createPlayers(seatConfigs),
+    round: 1,
+    phase: 'tide',
+    floodedRings: {},
+    picks: {},
+    currentPickerIndex: 0,
+    eventLog: [],
+    lastResult: null,
+    over: false,
+    id: Date.now() + Math.random()
+  };
+}
+
+/* =====================================================
+   BOTS
+   ===================================================== */
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function botPickEasy(board, player, game) {
+  var dry = getDryCells(board);
+  var need = requiredPicks(board);
+  return shuffle(dry).slice(0, need);
+}
+
+function botPickMedium(board, player, game) {
+  var dry = getDryCells(board);
+  var need = requiredPicks(board);
+  if (need === 0) return [];
+
+  var nextFloodRing = null;
+  if (CONFIG.TIDE_WARN_ROUNDS[game.round] !== undefined) {
+    nextFloodRing = CONFIG.TIDE_WARN_ROUNDS[game.round];
+  }
+  // Also prefer ring that floods THIS round? Flooding already happened before pick.
+  // Prefer ring about to flood next round for banking safety.
+
+  var scored = dry.map(function (pos) {
+    var cell = board[pos.row][pos.col];
+    var score = cell.value * 10;
+
+    // Avoid center and ring 2 about half the time
+    if (cell.ring >= 2 && Math.random() < 0.5) score -= 25;
+
+    // Prefer cells in a ring about to flood
+    if (nextFloodRing !== null && cell.ring === nextFloodRing) score += 30;
+
+    // Avoid cells adjacent to own stones (whirlpool risk to self)
+    var neighbors = getOrthogonalNeighbors(pos.row, pos.col, board.length);
+    for (var i = 0; i < neighbors.length; i++) {
+      var n = board[neighbors[i].row][neighbors[i].col];
+      if (n.state === CELL.CLAIMED && n.owner === player.id) {
+        score -= 15;
+      }
+    }
+    score += Math.random() * 5;
+    return { pos: pos, score: score };
+  });
+
+  scored.sort(function (a, b) { return b.score - a.score; });
+  var picks = [];
+  var used = {};
+  for (var s = 0; s < scored.length && picks.length < need; s++) {
+    var k = cellKey(scored[s].pos.row, scored[s].pos.col);
+    if (!used[k]) {
+      used[k] = true;
+      picks.push(scored[s].pos);
+    }
+  }
+  return picks;
+}
+
+function botPickHard(board, player, game) {
+  var dry = getDryCells(board);
+  var need = requiredPicks(board);
+  if (need === 0) return [];
+
+  var others = game.players.length - 1;
+  var nextFloodRing = CONFIG.TIDE_WARN_ROUNDS[game.round];
+  var bluff = (Math.random() - 0.5) * 0.15;
+
+  function popularity(cell) {
+    // Estimate P(someone else picks this cell)
+    var base = 0.08 + cell.value * 0.06;
+    if (cell.ring === 3) base += 0.25;
+    if (cell.ring === 2) base += 0.12;
+    if (nextFloodRing !== undefined && cell.ring === nextFloodRing) base += 0.18;
+    // More opponents => higher chance someone picks it
+    var p = 1 - Math.pow(1 - Math.min(0.55, base), Math.max(1, others));
+    return Math.min(0.85, Math.max(0.05, p + bluff));
+  }
+
+  var scored = dry.map(function (pos) {
+    var cell = board[pos.row][pos.col];
+    var pop = popularity(cell);
+    var pSafe = 1 - pop;
+    var expectedClaim = cell.value * pSafe;
+
+    // Expected loss from nearby collisions sweeping this after claim
+    var sweepRisk = 0;
+    var neighbors = getOrthogonalNeighbors(pos.row, pos.col, board.length);
+    for (var i = 0; i < neighbors.length; i++) {
+      var npos = neighbors[i];
+      var ncell = board[npos.row][npos.col];
+      if (ncell.state === CELL.DRY) {
+        var nPop = popularity(ncell);
+        // Rough: collision if 2+ pick neighbor — approximate
+        var collideProb = nPop * 0.5;
+        sweepRisk += collideProb * cell.value * pSafe * 0.4;
+      }
+      // Risk of destroying own adjacent stone by causing collision here
+      if (ncell.state === CELL.CLAIMED && ncell.owner === player.id) {
+        sweepRisk += pop * ncell.value * 0.6;
+      }
+    }
+
+    var ev = expectedClaim - sweepRisk + Math.random() * 0.3;
+    return { pos: pos, score: ev };
+  });
+
+  scored.sort(function (a, b) { return b.score - a.score; });
+  // Randomize among top choices
+  var topN = Math.min(5, scored.length);
+  var top = scored.slice(0, topN);
+  var picks = [];
+  var used = {};
+  var pool = shuffle(top);
+  for (var i = 0; i < pool.length && picks.length < need; i++) {
+    var k = cellKey(pool[i].pos.row, pool[i].pos.col);
+    if (!used[k]) {
+      used[k] = true;
+      picks.push(pool[i].pos);
+    }
+  }
+  // Fill if needed
+  for (var j = 0; j < scored.length && picks.length < need; j++) {
+    var k2 = cellKey(scored[j].pos.row, scored[j].pos.col);
+    if (!used[k2]) {
+      used[k2] = true;
+      picks.push(scored[j].pos);
+    }
+  }
+  return picks;
+}
+
+function botPick(board, player, game) {
+  var picks;
+  if (player.difficulty === 'easy') picks = botPickEasy(board, player, game);
+  else if (player.difficulty === 'hard') picks = botPickHard(board, player, game);
+  else picks = botPickMedium(board, player, game);
+
+  // Validate: only dry, unique, correct count
+  var drySet = {};
+  getDryCells(board).forEach(function (d) { drySet[cellKey(d.row, d.col)] = true; });
+  var need = requiredPicks(board);
+  var valid = [];
+  var seen = {};
+  for (var i = 0; i < picks.length; i++) {
+    var k = cellKey(picks[i].row, picks[i].col);
+    if (drySet[k] && !seen[k]) {
+      seen[k] = true;
+      valid.push({ row: picks[i].row, col: picks[i].col });
+    }
+  }
+  if (valid.length < need) {
+    var dry = getDryCells(board);
+    for (var d = 0; d < dry.length && valid.length < need; d++) {
+      var dk = cellKey(dry[d].row, dry[d].col);
+      if (!seen[dk]) {
+        seen[dk] = true;
+        valid.push({ row: dry[d].row, col: dry[d].col });
+      }
+    }
+  }
+  return valid.slice(0, need);
+}
+
+/* =====================================================
+   AUDIO (Web Audio API)
+   ===================================================== */
+var audio = {
+  ctx: null,
+  unlocked: false
+};
+
+function unlockAudio() {
+  if (audio.unlocked) return;
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    audio.ctx = new AC();
+    if (audio.ctx.state === 'suspended') audio.ctx.resume();
+    audio.unlocked = true;
+  } catch (e) { /* ignore */ }
+}
+
+function playTone(freq, dur, type, gain, delay) {
+  if (!state.settings.sound || !audio.ctx) return;
+  try {
+    var ctx = audio.ctx;
+    var t = ctx.currentTime + (delay || 0);
+    var osc = ctx.createOscillator();
+    var g = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(gain || 0.12, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.03);
+  } catch (e) { /* ignore */ }
+}
+
+function playNoise(dur, gain, lowpass) {
+  if (!state.settings.sound || !audio.ctx) return;
+  try {
+    var ctx = audio.ctx;
+    var len = Math.floor(ctx.sampleRate * dur);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    var src = ctx.createBufferSource();
+    src.buffer = buf;
+    var filt = ctx.createBiquadFilter();
+    filt.type = 'lowpass';
+    filt.frequency.value = lowpass || 800;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(gain || 0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    src.connect(filt);
+    filt.connect(g);
+    g.connect(ctx.destination);
+    src.start();
+  } catch (e) { /* ignore */ }
+}
+
+var SFX = {
+  select: function () { playTone(520, 0.05, 'triangle', 0.08); },
+  confirm: function () { playTone(660, 0.08, 'sine', 0.1); playTone(880, 0.1, 'sine', 0.08, 0.06); },
+  reveal: function () { playTone(440, 0.06, 'square', 0.05); },
+  collision: function () { playNoise(0.2, 0.18, 600); playTone(90, 0.25, 'sawtooth', 0.08); },
+  sweep: function () { playTone(300, 0.12, 'triangle', 0.07); playTone(180, 0.15, 'sine', 0.05, 0.04); },
+  tide: function () {
+    playTone(120, 0.4, 'sine', 0.1);
+    playTone(160, 0.5, 'sine', 0.07, 0.1);
+    playNoise(0.35, 0.08, 400);
+  },
+  win: function () {
+    [523, 659, 784, 1047].forEach(function (f, i) {
+      playTone(f, 0.3, 'sine', 0.12, i * 0.12);
+    });
+  }
+};
+
+/* =====================================================
+   STORAGE
+   ===================================================== */
+function loadSettings() {
+  try {
+    var raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!raw) return;
+    var data = JSON.parse(raw);
+    if (typeof data.sound === 'boolean') state.settings.sound = data.sound;
+    if (data.animSpeed) state.settings.animSpeed = data.animSpeed;
+    if (typeof data.patterns === 'boolean') state.settings.patterns = data.patterns;
+    if (typeof data.largeText === 'boolean') state.settings.largeText = data.largeText;
+  } catch (e) { /* storage blocked */ }
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.settings));
+  } catch (e) { /* storage blocked */ }
+}
+
+function applySettingsToDOM() {
+  var root = document.documentElement;
+  root.classList.toggle('large-text', state.settings.largeText);
+  root.classList.toggle('no-patterns', !state.settings.patterns);
+  root.classList.remove('anim-fast', 'anim-off');
+  if (state.settings.animSpeed === 'fast') root.classList.add('anim-fast');
+  if (state.settings.animSpeed === 'off') root.classList.add('anim-off');
+
+  var soundEl = document.getElementById('set-sound');
+  var animEl = document.getElementById('set-anim');
+  var patEl = document.getElementById('set-patterns');
+  var largeEl = document.getElementById('set-large');
+  if (soundEl) soundEl.checked = state.settings.sound;
+  if (animEl) animEl.value = state.settings.animSpeed;
+  if (patEl) patEl.checked = state.settings.patterns;
+  if (largeEl) largeEl.checked = state.settings.largeText;
+}
+
+function animMs(base) {
+  if (state.settings.animSpeed === 'off') return 0;
+  if (state.settings.animSpeed === 'fast') return Math.round(base * 0.5);
+  return base;
+}
+
+function wait(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, animMs(ms)); });
+}
+
+/* =====================================================
+   UI RENDERING
+   ===================================================== */
+function $(id) { return document.getElementById(id); }
+
+function showScreen(name) {
+  state.screen = name;
+  document.querySelectorAll('.screen').forEach(function (el) {
+    el.classList.toggle('active', el.id === 'screen-' + name);
+  });
+}
+
+function announce(msg) {
+  var live = $('aria-live');
+  if (live) live.textContent = msg;
+}
+
+function initSeats() {
+  var count = state.setup.playerCount;
+  var seats = [];
+  for (var i = 0; i < count; i++) {
+    var existing = state.setup.seats[i];
+    seats.push({
+      name: (existing && existing.name) || CONFIG.DEFAULT_NAMES[i],
+      isBot: existing ? existing.isBot : (i !== 0),
+      difficulty: (existing && existing.difficulty) || 'medium'
+    });
+  }
+  state.setup.seats = seats;
+  renderSeats();
+}
+
+function renderSeats() {
+  var list = $('seat-list');
+  list.innerHTML = '';
+  state.setup.seats.forEach(function (seat, i) {
+    var div = document.createElement('div');
+    div.className = 'seat';
+    div.innerHTML =
+      '<div class="seat-swatch" style="background:' + CONFIG.COLORS[i] + '">' + CONFIG.SYMBOLS[i] + '</div>' +
+      '<input type="text" maxlength="12" value="' + escapeAttr(seat.name) + '" data-seat="' + i + '" aria-label="Player ' + (i + 1) + ' name">' +
+      '<div class="seat-controls">' +
+        '<button type="button" class="toggle-type ' + (seat.isBot ? 'is-bot' : 'is-human') + '" data-toggle-type="' + i + '">' +
+          (seat.isBot ? 'Bot' : 'Human') +
+        '</button>' +
+        '<select data-diff="' + i + '" aria-label="Bot difficulty" ' + (seat.isBot ? '' : 'hidden') + '>' +
+          '<option value="easy"' + (seat.difficulty === 'easy' ? ' selected' : '') + '>Easy</option>' +
+          '<option value="medium"' + (seat.difficulty === 'medium' ? ' selected' : '') + '>Medium</option>' +
+          '<option value="hard"' + (seat.difficulty === 'hard' ? ' selected' : '') + '>Hard</option>' +
+        '</select>' +
+      '</div>';
+    list.appendChild(div);
+  });
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function buildBoardDOM() {
+  var boardEl = $('board');
+  boardEl.innerHTML = '';
+  for (var r = 0; r < CONFIG.BOARD_SIZE; r++) {
+    for (var c = 0; c < CONFIG.BOARD_SIZE; c++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tile';
+      btn.dataset.row = r;
+      btn.dataset.col = c;
+      btn.setAttribute('role', 'gridcell');
+      boardEl.appendChild(btn);
+    }
+  }
+}
+
+function renderBoard(opts) {
+  opts = opts || {};
+  var game = state.game;
+  if (!game) return;
+  var board = game.board;
+  var selected = opts.selected || {};
+  var ghosts = opts.ghosts || {};
+  var warnRing = opts.warnRing;
+  var flashKeys = opts.flashKeys || {};
+
+  var tiles = $('board').children;
+  for (var i = 0; i < tiles.length; i++) {
+    var btn = tiles[i];
+    var r = +btn.dataset.row;
+    var c = +btn.dataset.col;
+    var cell = board[r][c];
+    var key = cellKey(r, c);
+
+    btn.className = 'tile ring-' + cell.ring;
+    btn.innerHTML = '';
+
+    if (cell.state === CELL.FLOODED) btn.classList.add('flooded');
+    else if (cell.state === CELL.WHIRLPOOL) btn.classList.add('whirlpool');
+    else if (cell.state === CELL.CLAIMED) btn.classList.add('claimed');
+    else btn.classList.add('dry');
+
+    if (cell.state === CELL.DRY && opts.interactive) {
+      btn.classList.add('selectable');
+      btn.disabled = false;
+      btn.tabIndex = (r === state.focusRow && c === state.focusCol) ? 0 : -1;
+    } else {
+      btn.disabled = true;
+      btn.tabIndex = -1;
+    }
+
+    if (selected[key]) btn.classList.add('selected');
+    if (warnRing !== undefined && cell.ring === warnRing && cell.state === CELL.DRY) {
+      btn.classList.add('tide-warn');
+    }
+    if (flashKeys[key]) btn.classList.add('flash-collide');
+    if (ghosts[key]) {
+      btn.classList.add('ghost-mark');
+      btn.style.setProperty('--ghost-color', ghosts[key]);
+    } else {
+      btn.style.removeProperty('--ghost-color');
+    }
+
+    var val = document.createElement('span');
+    val.className = 'tile-val';
+    val.textContent = cell.value;
+    btn.appendChild(val);
+
+    if (cell.state === CELL.CLAIMED && cell.owner !== null) {
+      var p = game.players[cell.owner];
+      var stone = document.createElement('span');
+      var shapeClass = ({ '●': 'sym-circle', '▲': 'sym-triangle', '■': 'sym-square', '◆': 'sym-diamond' })[p.symbol] || 'sym-circle';
+      stone.className = 'stone ' + shapeClass;
+      stone.style.background = p.color;
+      if (state.settings.patterns) {
+        var sym = document.createElement('span');
+        sym.className = 'stone-symbol';
+        sym.textContent = p.symbol;
+        stone.appendChild(sym);
+      }
+      btn.appendChild(stone);
+    }
+
+    var label = 'Row ' + r + ', column ' + c + ', value ' + cell.value + ', ' + cell.state;
+    if (cell.state === CELL.CLAIMED && cell.owner !== null) {
+      label += ', owned by ' + game.players[cell.owner].name;
+    }
+    if (selected[key]) label += ', selected';
+    btn.setAttribute('aria-label', label);
+  }
+}
+
+function renderScoreboard(currentId) {
+  var game = state.game;
+  var el = $('scoreboard');
+  el.innerHTML = '';
+  game.players.forEach(function (p) {
+    var card = document.createElement('div');
+    card.className = 'player-card' + (p.id === currentId ? ' current' : '');
+    var pot = unbankedPotential(game.board, p.id);
+    card.innerHTML =
+      '<div class="pc-swatch" style="background:' + p.color + '">' +
+        (state.settings.patterns ? p.symbol : '') +
+      '</div>' +
+      '<div><div class="pc-name">' + escapeHtml(p.name) + '</div>' +
+      '<div class="pc-stats">Board: ' + p.stonesOnBoard + ' · Potential: ' + pot + '</div></div>' +
+      '<div class="pc-score" title="Banked points">' + p.points + '</div>';
+    el.appendChild(card);
+  });
+}
+
+function renderTopBar() {
+  var game = state.game;
+  $('round-label').textContent = 'Round ' + game.round + ' / ' + CONFIG.TOTAL_ROUNDS;
+
+  var meter = $('tide-meter');
+  Array.prototype.forEach.call(meter.querySelectorAll('.tide-ring'), function (el) {
+    var ring = +el.dataset.ring;
+    el.classList.toggle('flooded', !!game.floodedRings[ring]);
+    var warn = CONFIG.TIDE_WARN_ROUNDS[game.round];
+    el.classList.toggle('warn', warn !== undefined && warn === ring && !game.floodedRings[ring]);
+  });
+
+  var banner = $('tide-banner');
+  var warnRing = CONFIG.TIDE_WARN_ROUNDS[game.round];
+  if (warnRing !== undefined && !game.floodedRings[warnRing]) {
+    banner.textContent = 'The tide rises next round: ' + CONFIG.RING_NAMES[warnRing];
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+function renderEventLog() {
+  var ul = $('event-log');
+  ul.innerHTML = '';
+  var logs = state.game.eventLog.slice().reverse();
+  logs.forEach(function (line) {
+    var li = document.createElement('li');
+    li.textContent = line;
+    ul.appendChild(li);
+  });
+}
+
+function setPickUI(selectedCount, need, interactive) {
+  var status = $('pick-status');
+  var thinking = $('thinking');
+  var actions = $('pick-actions');
+  if (!interactive) {
+    status.style.display = 'none';
+    actions.style.display = 'none';
+    return;
+  }
+  status.style.display = '';
+  actions.style.display = '';
+  thinking.classList.remove('show');
+  if (need === 0) {
+    status.textContent = 'No dry cells left — skipping';
+  } else {
+    status.textContent = 'Pick ' + need + ' cell' + (need === 1 ? '' : 's') + ' (' + selectedCount + '/' + need + ' chosen)';
+  }
+  $('btn-confirm').disabled = selectedCount !== need;
+  $('btn-clear').disabled = selectedCount === 0;
+}
+
+function showThinking(name) {
+  $('pick-status').style.display = 'none';
+  $('pick-actions').style.display = 'none';
+  $('thinking-name').textContent = name;
+  $('thinking').classList.add('show');
+}
+
+function hideThinking() {
+  $('thinking').classList.remove('show');
+}
+
+function showPrivacy(player) {
+  return new Promise(function (resolve) {
+    var ov = $('privacy-overlay');
+    $('privacy-swatch').style.background = player.color;
+    $('privacy-swatch').textContent = player.symbol;
+    $('privacy-title').textContent = 'Pass the device to ' + player.name;
+    $('privacy-msg').textContent = 'Tap when only you can see the screen.';
+    ov.classList.add('show');
+    state.pendingPrivacyResolve = resolve;
+  });
+}
+
+function showCover(player) {
+  return new Promise(function (resolve) {
+    var ov = $('privacy-overlay');
+    $('privacy-swatch').style.background = player.color;
+    $('privacy-swatch').textContent = player.symbol;
+    $('privacy-title').textContent = 'Hand the device back';
+    $('privacy-msg').textContent = player.name + '\'s picks are hidden. Tap to continue.';
+    ov.classList.add('show');
+    state.pendingPrivacyResolve = resolve;
+  });
+}
+
+function hidePrivacy() {
+  $('privacy-overlay').classList.remove('show');
+  var r = state.pendingPrivacyResolve;
+  state.pendingPrivacyResolve = null;
+  if (r) r();
+}
+
+function showSummary(title, lines) {
+  return new Promise(function (resolve) {
+    $('summary-title').textContent = title;
+    var ul = $('summary-list');
+    ul.innerHTML = '';
+    lines.forEach(function (line) {
+      var li = document.createElement('li');
+      li.textContent = line;
+      ul.appendChild(li);
+    });
+    $('summary-overlay').classList.add('show');
+    state.pendingSummaryResolve = resolve;
+  });
+}
+
+function hideSummary() {
+  $('summary-overlay').classList.remove('show');
+  var r = state.pendingSummaryResolve;
+  state.pendingSummaryResolve = null;
+  if (r) r();
+}
+
+function renderResults(winnersInfo) {
+  var game = state.game;
+  var players = game.players.slice().sort(function (a, b) {
+    if (b.points !== a.points) return b.points - a.points;
+    return b.stonesBanked - a.stonesBanked;
+  });
+  var maxPts = Math.max.apply(null, players.map(function (p) { return p.points; })) || 1;
+
+  var banner = $('winner-banner');
+  if (winnersInfo.winners.length > 1) {
+    var names = winnersInfo.winners.map(function (id) { return game.players[id].name; });
+    banner.textContent = 'Shared victory: ' + names.join(' & ') + '!';
+  } else {
+    banner.textContent = game.players[winnersInfo.winners[0]].name + ' wins!';
+  }
+
+  var chart = $('bar-chart');
+  chart.innerHTML = '';
+  players.forEach(function (p) {
+    var row = document.createElement('div');
+    row.className = 'bar-row';
+    var pct = Math.round((p.points / maxPts) * 100);
+    row.innerHTML =
+      '<span>' + escapeHtml(p.name) + '</span>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:0%;background:' + p.color + '" data-w="' + pct + '%"></div></div>' +
+      '<strong>' + p.points + '</strong>';
+    chart.appendChild(row);
+  });
+  requestAnimationFrame(function () {
+    chart.querySelectorAll('.bar-fill').forEach(function (el) {
+      el.style.width = el.dataset.w;
+    });
+  });
+
+  // Best moment
+  var bestWhirl = players.slice().sort(function (a, b) { return b.whirlpoolsCaused - a.whirlpoolsCaused; })[0];
+  var bestClaims = players.slice().sort(function (a, b) { return b.claimsMade - a.claimsMade; })[0];
+  var moment = 'Most whirlpools caused: ' + bestWhirl.name + ' (' + bestWhirl.whirlpoolsCaused + ')';
+  if (bestClaims.claimsMade > 0) {
+    moment += ' · Most claims: ' + bestClaims.name + ' (' + bestClaims.claimsMade + ')';
+  }
+  $('best-moment').textContent = moment;
+
+  var list = $('results-list');
+  list.innerHTML = '';
+  players.forEach(function (p, idx) {
+    var li = document.createElement('li');
+    li.innerHTML = '<span>#' + (idx + 1) + ' ' + escapeHtml(p.name) + ' ' + p.symbol +
+      '</span><span>' + p.points + ' pts · ' + p.stonesBanked + ' stones banked</span>';
+    list.appendChild(li);
+  });
+
+  showScreen('results');
+  SFX.win();
+  announce(banner.textContent);
+}
+
+/* =====================================================
+   GAME FLOW
+   ===================================================== */
+var pickState = {
+  selected: {},
+  interactive: false,
+  currentPlayer: null,
+  need: 2
+};
+
+function startGame() {
+  // Abort any in-progress game loop
+  if (state.game) state.game.over = true;
+  if (pickState.resolve) {
+    var prStart = pickState.resolve;
+    pickState.resolve = null;
+    pickState.interactive = false;
+    prStart([]);
+  }
+  hidePrivacy();
+  hideSummary();
+
+  // Sync seats from DOM
+  var inputs = document.querySelectorAll('#seat-list input[data-seat]');
+  inputs.forEach(function (inp) {
+    var i = +inp.dataset.seat;
+    if (state.setup.seats[i]) {
+      var name = inp.value.trim().slice(0, 12);
+      state.setup.seats[i].name = name || CONFIG.DEFAULT_NAMES[i];
+    }
+  });
+
+  state.game = createGame(state.setup.seats);
+  buildBoardDOM();
+  showScreen('game');
+  announce('Game started. Round 1.');
+  runGameLoop();
+}
+
+async function runGameLoop() {
+  var game = state.game;
+  var loopId = game.id;
+  while (game.round <= CONFIG.TOTAL_ROUNDS && !game.over && state.game && state.game.id === loopId) {
+    await runRound();
+    if (game.over || !state.game || state.game.id !== loopId) return;
+    game.round += 1;
+  }
+  if (!state.game || state.game.id !== loopId || game.over) return;
+  // Final banking
+  var finalBanked = scoreFinal(game.board, game.players);
+  if (finalBanked.length) {
+    game.eventLog.push('Final tide: remaining stones banked.');
+  }
+  var winners = determineWinners(game.players);
+  game.over = true;
+  renderBoard({ interactive: false });
+  renderScoreboard(-1);
+  renderTopBar();
+  renderResults(winners);
+}
+
+async function runRound() {
+  var game = state.game;
+  if (!game || game.over) return;
+
+  // 1. TIDE PHASE
+  var floodRing = CONFIG.FLOOD_SCHEDULE[game.round];
+  if (floodRing !== undefined && !game.floodedRings[floodRing]) {
+    await animateTide(floodRing);
+    var tideResult = applyTide(game.board, game.players, floodRing);
+    game.floodedRings[floodRing] = true;
+    var bankLines = tideResult.banked.map(function (b) {
+      return game.players[b.playerId].name + ' banked ' + b.value + ' from (' + b.row + ',' + b.col + ')';
+    });
+    game.eventLog.push('Round ' + game.round + ': tide flooded the ' + CONFIG.RING_NAMES[floodRing] +
+      (bankLines.length ? ' — ' + bankLines.join('; ') : ' — no stones banked'));
+    SFX.tide();
+    renderBoard({ interactive: false, warnRing: undefined });
+    renderScoreboard(-1);
+    renderTopBar();
+    announce('The tide flooded the ' + CONFIG.RING_NAMES[floodRing] + '.');
+    await wait(600);
+  }
+
+  renderTopBar();
+  renderEventLog();
+
+  // 2. PICK PHASE
+  game.picks = {};
+  var need = requiredPicks(game.board);
+  var humans = game.players.filter(function (p) { return !p.isBot; });
+  var multiHuman = humans.length > 1;
+
+  for (var i = 0; i < game.players.length; i++) {
+    var player = game.players[i];
+    renderScoreboard(player.id);
+
+    if (player.isBot) {
+      showThinking(player.name);
+      renderBoard({ interactive: false, warnRing: CONFIG.TIDE_WARN_ROUNDS[game.round] });
+      var delay = CONFIG.BOT_THINK_MIN + Math.random() * (CONFIG.BOT_THINK_MAX - CONFIG.BOT_THINK_MIN);
+      await wait(delay);
+      game.picks[player.id] = botPick(game.board, player, game);
+      hideThinking();
+    } else {
+      if (multiHuman) {
+        await showPrivacy(player);
+      }
+      game.picks[player.id] = await humanPick(player);
+      if (multiHuman) {
+        await showCover(player);
+      }
+    }
+  }
+
+  if (game.over || !state.game || state.game.id !== game.id) return;
+
+  // 3. REVEAL PHASE
+  await animateReveal(game.picks);
+  if (game.over || !state.game || state.game.id !== game.id) return;
+  var result = resolveRound(game.board, game.players, game.picks);
+  game.lastResult = result;
+  await animateResolution(result);
+  if (game.over || !state.game || state.game.id !== game.id) return;
+
+  // 4. SCORE PHASE
+  var lines = buildSummaryLines(result);
+  game.eventLog.push('Round ' + game.round + ': ' + lines.join(' · '));
+  renderEventLog();
+  renderBoard({ interactive: false, warnRing: CONFIG.TIDE_WARN_ROUNDS[game.round] });
+  renderScoreboard(-1);
+  renderTopBar();
+  announce('Round ' + game.round + ' complete. ' + lines.join('. '));
+  await showSummary('Round ' + game.round + ' Summary', lines.length ? lines : ['Nothing happened this round.']);
+}
+
+function buildSummaryLines(result) {
+  var game = state.game;
+  var lines = [];
+  result.claims.forEach(function (c) {
+    lines.push(game.players[c.playerId].name + ' claimed (' + c.row + ',' + c.col + ') for ' + c.value);
+  });
+  result.collisions.forEach(function (c) {
+    var names = c.players.map(function (id) { return game.players[id].name; }).join(' & ');
+    lines.push('Whirlpool at (' + c.row + ',' + c.col + ') — ' + names + ' collided');
+  });
+  result.swept.forEach(function (s) {
+    lines.push(game.players[s.playerId].name + '\'s stone swept from (' + s.row + ',' + s.col + ')');
+  });
+  if (!lines.length) lines.push('No claims or collisions.');
+  // Points update
+  game.players.forEach(function (p) {
+    lines.push(p.name + ': ' + p.points + ' pts (board potential ' + unbankedPotential(game.board, p.id) + ')');
+  });
+  return lines;
+}
+
+function humanPick(player) {
+  return new Promise(function (resolve) {
+    var need = requiredPicks(state.game.board);
+    pickState.selected = {};
+    pickState.need = need;
+    pickState.interactive = true;
+    pickState.currentPlayer = player;
+    pickState.resolve = resolve;
+
+    setPickUI(0, need, true);
+    renderBoard({
+      interactive: need > 0,
+      selected: pickState.selected,
+      warnRing: CONFIG.TIDE_WARN_ROUNDS[state.game.round]
+    });
+    renderScoreboard(player.id);
+
+    if (need === 0) {
+      // Auto-skip
+      setTimeout(function () {
+        pickState.interactive = false;
+        resolve([]);
+      }, animMs(400));
+    }
+  });
+}
+
+function confirmHumanPick() {
+  if (!pickState.interactive || !pickState.resolve) return;
+  var keys = Object.keys(pickState.selected);
+  if (keys.length !== pickState.need) return;
+  var picks = keys.map(parseKey);
+  pickState.interactive = false;
+  var resolve = pickState.resolve;
+  pickState.resolve = null;
+  SFX.confirm();
+  setPickUI(0, pickState.need, false);
+  resolve(picks);
+}
+
+function clearHumanPick() {
+  if (!pickState.interactive) return;
+  pickState.selected = {};
+  setPickUI(0, pickState.need, true);
+  renderBoard({
+    interactive: true,
+    selected: pickState.selected,
+    warnRing: CONFIG.TIDE_WARN_ROUNDS[state.game.round]
+  });
+}
+
+function toggleTileSelect(row, col) {
+  if (!pickState.interactive) return;
+  var game = state.game;
+  var cell = game.board[row][col];
+  if (cell.state !== CELL.DRY) return;
+  var key = cellKey(row, col);
+  if (pickState.selected[key]) {
+    delete pickState.selected[key];
+    SFX.select();
+  } else {
+    var count = Object.keys(pickState.selected).length;
+    if (count >= pickState.need) return;
+    pickState.selected[key] = true;
+    SFX.select();
+  }
+  var n = Object.keys(pickState.selected).length;
+  setPickUI(n, pickState.need, true);
+  renderBoard({
+    interactive: true,
+    selected: pickState.selected,
+    warnRing: CONFIG.TIDE_WARN_ROUNDS[game.round]
+  });
+}
+
+async function animateTide(ring) {
+  var game = state.game;
+  renderTopBar();
+  // Mark tiles flooding
+  var tiles = $('board').children;
+  for (var i = 0; i < tiles.length; i++) {
+    var r = +tiles[i].dataset.row;
+    var c = +tiles[i].dataset.col;
+    if (game.board[r][c].ring === ring) {
+      tiles[i].classList.add('flooding-now');
+    }
+  }
+  await wait(700);
+}
+
+async function animateReveal(picks) {
+  var game = state.game;
+  var playerIds = Object.keys(picks).map(Number);
+  var ghosts = {};
+
+  for (var pi = 0; pi < playerIds.length; pi++) {
+    var pid = playerIds[pi];
+    var player = game.players[pid];
+    var cells = picks[pid] || [];
+    for (var ci = 0; ci < cells.length; ci++) {
+      var k = cellKey(cells[ci].row, cells[ci].col);
+      // If multiple ghosts, blend — just use last color, flash will show collision
+      ghosts[k] = player.color;
+    }
+    SFX.reveal();
+    renderBoard({ interactive: false, ghosts: Object.assign({}, ghosts) });
+    await wait(450);
+  }
+  await wait(300);
+}
+
+async function animateResolution(result) {
+  // Flash collisions
+  if (result.collisions.length) {
+    var flash = {};
+    result.collisions.forEach(function (c) {
+      flash[cellKey(c.row, c.col)] = true;
+    });
+    SFX.collision();
+    renderBoard({ interactive: false, flashKeys: flash });
+    await wait(500);
+  }
+
+  // Render claims + whirlpools (board already mutated)
+  renderBoard({ interactive: false });
+  await wait(300);
+
+  // Animate sweeps: briefly revive stones then shrink them away
+  if (result.swept.length) {
+    SFX.sweep();
+    var game = state.game;
+    result.swept.forEach(function (s) {
+      var tile = $('board').querySelector('[data-row="' + s.row + '"][data-col="' + s.col + '"]');
+      if (!tile) return;
+      var p = game.players[s.playerId];
+      var stone = document.createElement('span');
+      var shapeClass = ({ '●': 'sym-circle', '▲': 'sym-triangle', '■': 'sym-square', '◆': 'sym-diamond' })[p.symbol] || 'sym-circle';
+      stone.className = 'stone sweeping ' + shapeClass;
+      stone.style.background = p.color;
+      if (state.settings.patterns) {
+        var sym = document.createElement('span');
+        sym.className = 'stone-symbol';
+        sym.textContent = p.symbol;
+        stone.appendChild(sym);
+      }
+      tile.appendChild(stone);
+    });
+    await wait(450);
+    renderBoard({ interactive: false });
+  }
+}
+
+/* =====================================================
+   EVENTS
+   ===================================================== */
+function onBoardClick(e) {
+  var btn = e.target.closest('.tile');
+  if (!btn || !pickState.interactive) return;
+  var row = +btn.dataset.row;
+  var col = +btn.dataset.col;
+  state.focusRow = row;
+  state.focusCol = col;
+  toggleTileSelect(row, col);
+}
+
+function onBoardKeydown(e) {
+  if (!pickState.interactive || state.screen !== 'game') return;
+  var r = state.focusRow;
+  var c = state.focusCol;
+  var size = CONFIG.BOARD_SIZE;
+  var moved = false;
+
+  if (e.key === 'ArrowUp') { r = Math.max(0, r - 1); moved = true; }
+  else if (e.key === 'ArrowDown') { r = Math.min(size - 1, r + 1); moved = true; }
+  else if (e.key === 'ArrowLeft') { c = Math.max(0, c - 1); moved = true; }
+  else if (e.key === 'ArrowRight') { c = Math.min(size - 1, c + 1); moved = true; }
+  else if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    toggleTileSelect(r, c);
+    return;
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    clearHumanPick();
+    return;
+  }
+
+  if (moved) {
+    e.preventDefault();
+    state.focusRow = r;
+    state.focusCol = c;
+    renderBoard({
+      interactive: true,
+      selected: pickState.selected,
+      warnRing: CONFIG.TIDE_WARN_ROUNDS[state.game.round]
+    });
+    var tile = $('board').querySelector('[data-row="' + r + '"][data-col="' + c + '"]');
+    if (tile) tile.focus();
+  }
+}
+
+function bindEvents() {
+  document.addEventListener('pointerdown', unlockAudio, { once: true });
+  document.addEventListener('keydown', unlockAudio, { once: true });
+
+  document.body.addEventListener('click', function (e) {
+    var actionBtn = e.target.closest('[data-action]');
+    if (actionBtn) {
+      handleAction(actionBtn.dataset.action);
+      return;
+    }
+    var countBtn = e.target.closest('[data-count]');
+    if (countBtn) {
+      state.setup.playerCount = +countBtn.dataset.count;
+      document.querySelectorAll('[data-count]').forEach(function (b) {
+        b.classList.toggle('active', +b.dataset.count === state.setup.playerCount);
+      });
+      initSeats();
+      return;
+    }
+    var toggle = e.target.closest('[data-toggle-type]');
+    if (toggle) {
+      var ti = +toggle.dataset.toggleType;
+      state.setup.seats[ti].isBot = !state.setup.seats[ti].isBot;
+      renderSeats();
+      return;
+    }
+  });
+
+  document.body.addEventListener('change', function (e) {
+    if (e.target.matches('[data-diff]')) {
+      var di = +e.target.dataset.diff;
+      state.setup.seats[di].difficulty = e.target.value;
+    }
+    if (e.target.matches('#seat-list input[data-seat]')) {
+      var si = +e.target.dataset.seat;
+      state.setup.seats[si].name = e.target.value.trim().slice(0, 12);
+    }
+    if (e.target.id === 'set-sound') {
+      state.settings.sound = e.target.checked;
+      saveSettings();
+    }
+    if (e.target.id === 'set-anim') {
+      state.settings.animSpeed = e.target.value;
+      applySettingsToDOM();
+      saveSettings();
+    }
+    if (e.target.id === 'set-patterns') {
+      state.settings.patterns = e.target.checked;
+      applySettingsToDOM();
+      saveSettings();
+    }
+    if (e.target.id === 'set-large') {
+      state.settings.largeText = e.target.checked;
+      applySettingsToDOM();
+      saveSettings();
+    }
+  });
+
+  $('board').addEventListener('click', onBoardClick);
+  document.addEventListener('keydown', onBoardKeydown);
+
+  $('btn-confirm').addEventListener('click', confirmHumanPick);
+  $('btn-clear').addEventListener('click', clearHumanPick);
+
+  $('privacy-ok').addEventListener('click', hidePrivacy);
+  $('summary-ok').addEventListener('click', hideSummary);
+
+  $('log-toggle').addEventListener('click', function () {
+    state.logOpen = !state.logOpen;
+    $('event-log').classList.toggle('open', state.logOpen);
+    $('log-toggle').textContent = state.logOpen ? 'Event Log ▾' : 'Event Log ▸';
+    $('log-toggle').setAttribute('aria-expanded', String(state.logOpen));
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    if (state.game && !state.game.over && state.screen === 'game') {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+}
+
+function handleAction(action) {
+  unlockAudio();
+  switch (action) {
+    case 'goto-menu':
+      if (state.screen === 'game' && state.game && !state.game.over) {
+        if (!confirm('Quit current game?')) return;
+        state.game.over = true;
+        if (pickState.resolve) {
+          var prMenu = pickState.resolve;
+          pickState.resolve = null;
+          pickState.interactive = false;
+          prMenu([]);
+        }
+        hidePrivacy();
+        hideSummary();
+      }
+      showScreen('menu');
+      break;
+    case 'goto-setup':
+      initSeats();
+      showScreen('setup');
+      break;
+    case 'goto-howto':
+      showScreen('howto');
+      break;
+    case 'goto-settings':
+      applySettingsToDOM();
+      showScreen('settings');
+      break;
+    case 'start-game':
+      startGame();
+      break;
+    case 'play-again':
+      startGame();
+      break;
+    case 'quit-game':
+      if (confirm('Quit current game?')) {
+        if (state.game) state.game.over = true;
+        if (pickState.resolve) {
+          var prQuit = pickState.resolve;
+          pickState.resolve = null;
+          pickState.interactive = false;
+          prQuit([]);
+        }
+        hidePrivacy();
+        hideSummary();
+        showScreen('menu');
+      }
+      break;
+  }
+}
+
+/* =====================================================
+   SELF-TESTS
+   ===================================================== */
+function runSelfTests() {
+  var results = [];
+  function assert(name, cond) {
+    results.push({ name: name, pass: !!cond });
+    if (!cond) console.error('FAIL:', name);
+    else console.log('PASS:', name);
+  }
+
+  // 1. Single pick claims a cell
+  (function () {
+    var board = createBoard();
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false }
+    ]);
+    var res = resolveRound(board, players, {
+      0: [{ row: 3, col: 3 }],
+      1: [{ row: 0, col: 0 }]
+    });
+    assert('single pick claims cell', board[3][3].state === CELL.CLAIMED && board[3][3].owner === 0);
+    assert('other single pick claims', board[0][0].state === CELL.CLAIMED && board[0][0].owner === 1);
+    assert('claims recorded', res.claims.length === 2);
+  })();
+
+  // 2. Two players on one cell → whirlpool
+  (function () {
+    var board = createBoard();
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false }
+    ]);
+    var res = resolveRound(board, players, {
+      0: [{ row: 2, col: 2 }],
+      1: [{ row: 2, col: 2 }]
+    });
+    assert('collision makes whirlpool', board[2][2].state === CELL.WHIRLPOOL);
+    assert('nobody owns whirlpool', board[2][2].owner === null);
+    assert('collision recorded', res.collisions.length === 1);
+  })();
+
+  // 3. Whirlpool removes 4 adjacent stones including same-round
+  (function () {
+    var board = createBoard();
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false },
+      { name: 'C', isBot: false }
+    ]);
+    // Place an older stone above
+    board[1][2].state = CELL.CLAIMED;
+    board[1][2].owner = 2;
+    players[2].stonesOnBoard = 1;
+
+    var res = resolveRound(board, players, {
+      0: [{ row: 2, col: 2 }, { row: 5, col: 5 }], // collision + far claim
+      1: [{ row: 2, col: 2 }],
+      2: [{ row: 3, col: 2 }] // claims below whirlpool same round
+    });
+    // 2,2 is whirlpool (A+B). A also picks 5,5 alone → survives. C picks 3,2 → swept.
+    assert('whirlpool at center of test', board[2][2].state === CELL.WHIRLPOOL);
+    assert('same-round adjacent stone swept', board[3][2].state === CELL.DRY && board[3][2].owner === null);
+    assert('older adjacent stone swept', board[1][2].state === CELL.DRY);
+    assert('non-adjacent claim survives', board[5][5].state === CELL.CLAIMED && board[5][5].owner === 0);
+    assert('swept list has both', res.swept.length === 2);
+  })();
+
+  // 4. Swept stones not double-removed
+  (function () {
+    var board = createBoard();
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false },
+      { name: 'C', isBot: false },
+      { name: 'D', isBot: false }
+    ]);
+    // Stone between two future whirlpools
+    board[3][3].state = CELL.CLAIMED;
+    board[3][3].owner = 0;
+    players[0].stonesOnBoard = 1;
+
+    // Whirlpools at (3,2) and (3,4) — both adjacent to (3,3)
+    var res = resolveRound(board, players, {
+      0: [{ row: 3, col: 2 }],
+      1: [{ row: 3, col: 2 }],
+      2: [{ row: 3, col: 4 }],
+      3: [{ row: 3, col: 4 }]
+    });
+    assert('double whirlpool sweep once', res.swept.length === 1);
+    assert('stone removed once', board[3][3].state === CELL.DRY);
+    assert('owner stonesOnBoard is 0', players[0].stonesOnBoard === 0);
+  })();
+
+  // 5. Round 3 banks and floods ring 0
+  (function () {
+    var board = createBoard();
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false }
+    ]);
+    board[0][3].state = CELL.CLAIMED;
+    board[0][3].owner = 0;
+    players[0].stonesOnBoard = 1;
+    board[0][0].state = CELL.WHIRLPOOL;
+    var res = applyTide(board, players, 0);
+    assert('ring 0 flooded', board[0][3].state === CELL.FLOODED);
+    assert('whirlpool also flooded', board[0][0].state === CELL.FLOODED);
+    assert('points banked', players[0].points === 1);
+    assert('stonesBanked incremented', players[0].stonesBanked === 1);
+    assert('inner ring untouched', board[3][3].state === CELL.DRY);
+    assert('banked record', res.banked.length === 1 && res.banked[0].value === 1);
+  })();
+
+  // 6. Final scoring banks remaining stones
+  (function () {
+    var board = createBoard();
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false }
+    ]);
+    board[3][3].state = CELL.CLAIMED;
+    board[3][3].owner = 0;
+    players[0].stonesOnBoard = 1;
+    board[2][2].state = CELL.CLAIMED;
+    board[2][2].owner = 1;
+    players[1].stonesOnBoard = 1;
+    var banked = scoreFinal(board, players);
+    assert('final banks center 5', players[0].points === 5);
+    assert('final banks ring2 3', players[1].points === 3);
+    assert('two stones banked', banked.length === 2);
+  })();
+
+  // 7. Tie-break logic
+  (function () {
+    var players = createPlayers([
+      { name: 'A', isBot: false },
+      { name: 'B', isBot: false },
+      { name: 'C', isBot: false }
+    ]);
+    players[0].points = 10; players[0].stonesBanked = 2;
+    players[1].points = 10; players[1].stonesBanked = 5;
+    players[2].points = 8; players[2].stonesBanked = 9;
+    var w = determineWinners(players);
+    assert('tie-break by banked stones', w.winners.length === 1 && w.winners[0] === 1);
+
+    players[0].stonesBanked = 5;
+    w = determineWinners(players);
+    assert('shared victory when still tied', w.winners.length === 2 && w.reason === 'shared victory');
+  })();
+
+  // 8. Fewer than 2 dry cells
+  (function () {
+    var board = createBoard();
+    // Flood/claim everything except 1 dry
+    for (var r = 0; r < 7; r++) {
+      for (var c = 0; c < 7; c++) {
+        board[r][c].state = CELL.FLOODED;
+      }
+    }
+    board[3][3].state = CELL.DRY;
+    assert('required picks is 1', requiredPicks(board) === 1);
+
+    board[3][3].state = CELL.FLOODED;
+    assert('required picks is 0', requiredPicks(board) === 0);
+
+    var players = createPlayers([{ name: 'A', isBot: true, difficulty: 'easy' }, { name: 'B', isBot: true, difficulty: 'easy' }]);
+    // one dry
+    board[3][3].state = CELL.DRY;
+    var game = { board: board, players: players, round: 8 };
+    var picks = botPick(board, players[0], game);
+    assert('bot picks at most 1 when one dry', picks.length === 1);
+    assert('bot pick is valid dry', picks[0].row === 3 && picks[0].col === 3);
+  })();
+
+  // Ring values
+  assert('ring 0 value 1', getCellValue(0, 0) === 1);
+  assert('ring 3 value 5', getCellValue(3, 3) === 5);
+  assert('ring 2 value 3', getCellValue(2, 2) === 3);
+
+  var passed = results.filter(function (r) { return r.pass; }).length;
+  console.log('Self-tests: ' + passed + '/' + results.length + ' passed');
+  return { passed: passed, total: results.length, results: results };
+}
+
+/* =====================================================
+   INIT
+   ===================================================== */
+function init() {
+  loadSettings();
+  applySettingsToDOM();
+  initSeats();
+  buildBoardDOM();
+  bindEvents();
+  // Expose for console
+  window.runSelfTests = runSelfTests;
+  window.TIDEWATER = { CONFIG: CONFIG, state: state, rules: {
+    createBoard: createBoard, getDryCells: getDryCells, resolveRound: resolveRound,
+    applyTide: applyTide, scoreFinal: scoreFinal, determineWinners: determineWinners,
+    getRing: getRing, getCellValue: getCellValue, requiredPicks: requiredPicks
+  }};
+}
+
+init();
+})();
+</script>
+</body>
+</html>
